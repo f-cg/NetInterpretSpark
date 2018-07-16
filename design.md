@@ -7,4 +7,9 @@ scene和texture是整张图片属于某几个标签，index表里只是数字。
 
 label(number,name,category)
 
-feature_names(feature_name)
+feature_names(feature_name) #layer_name
+
+map(image,color_map_values)
+
+select 
+from feature_names,index

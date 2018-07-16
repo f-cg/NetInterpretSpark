@@ -16,7 +16,9 @@ if not os.path.exists(index_file):
     print(index_file+' index file not exists!')
     exit(0)
 df = spark.read.csv(index_file,schema='image string,split string,ih int,iw int,sh int,sw int,color string,object string,part string, material string,scene int,texture int', header=True)
-
-
+cl = df.rdd.collect()
+print(type(cl))
+print(type(cl[0]))
+print(type(cl[0]['sh']))
 # sc.textFile("file.csv") .map(lambda line: line.split(",")).filter(lambda line: len(line)>1).map(lambda line: (line[0],line[1])).collect()
 # 对index中的每一行并行处理。
