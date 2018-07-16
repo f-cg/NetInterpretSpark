@@ -1,0 +1,10 @@
+image,split,ih,iw,sh,sw,color,object,part,material,scene,texture
+opensurfaces/25605.jpg,train,224,224,112,112,opensurfaces/25605_color.png,,,opensurfaces/25605_material.png,,
+opensurfaces/24183.jpg,train,224,224,112,112,opensurfaces/24183_color.png,,,opensurfaces/24183_material.png,,
+opensurfaces/72705.jpg,train,224,224,112,112,opensurfaces/72705_color.png,,,opensurfaces/72705_material.png,,
+opensurfaces/100509.jpg,train,224,224,112,112,opensurfaces/100509_color.png,,,opensurfaces/100509_material.png,,
+ade20k/ADE_train_00003891.jpg,train,224,224,112,112,ade20k/ADE_train_00003891_color.png,ade20k/ADE_train_00003891_object.png,,,83,
+opensurfaces/97035.jpg,train,224,224,112,112,opensurfaces/97035_color.png,,,opensurfaces/97035_material.png,,
+ade20k/ADE_train_00006107.jpg,train,224,224,112,112,ade20k/ADE_train_00006107_color.png,ade20k/ADE_train_00006107_object.png,ade20k/ADE_train_00006107_part_1.png,,301,
+opensurfaces/20360.jpg,train,224,224,112,112,opensurfaces/20360_color.png,,,opensurfaces/20360_material.png,,
+opensurfaces/6582.jpg,train,224,224,112,112,opensurfaces/6582_color.png,,,opensurfaces/6582_material.png,,
