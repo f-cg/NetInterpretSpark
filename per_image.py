@@ -1,13 +1,61 @@
-import numpy
-import cv2
+import numpy as np
+import torch
+from PIL import Image
 from settings import DATA_DIRECTORY
 import os
-#image,split,ih,iw,sh,sw,color,object,part,material,scene,texture
+from model_loader import loadmodel
+from torchvision import transforms as trn
+from torch.nn import functional as F
+from settings import FEATURE_NAMES
+# image,split,ih,iw,sh,sw,color,object,part,material,scene,texture
+
+
+def returnTF():
+    # load the image transformer
+    tf = trn.Compose([
+        trn.Resize((224, 224)),
+        trn.ToTensor(),
+        trn.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
+    return tf
+
+
 def per_image(line):
-    r=line.split(',')
-    assert len(r)==12
-    im_name=DATA_DIRECTORY+'images/'+r[0]
+    print(line)
+    # print(line)
+    record = line.split(',')
+    assert len(record) == 12
+    im_name = DATA_DIRECTORY+'images/'+record[0]
     if not os.path.exists(im_name):
-        return (im_name,'False')
-    im=cv2.imread(im_name)
-    return (line,im)
+        return (im_name, 'False')
+    # for r in record[6:]:
+    #     if r!='':
+    #         print(r)
+    # return
+    img = Image.open(im_name)
+    features_blobs = []
+    def hook_feature(module, input, output):
+        features_blobs.append(output.data.cpu().numpy())
+    model = loadmodel(hook_feature)
+    tf = returnTF()
+    imgs=tf(img).unsqueeze(0)
+    logit = model(imgs)
+    # print(features_blobs[0].shape)
+    flat_results = []
+    for layer_i, layer_features in enumerate(features_blobs):
+        for unit_id, map in enumerate(layer_features[0]):
+            flat_results.append((FEATURE_NAMES[layer_i]+'_'+str(unit_id), map))
+    # print(flat_results)
+    # h_x = F.softmax(logit, 1).data.squeeze()
+    # print(h_x[46])
+    # # return (line,im)
+    # return flat_results
+    # print(flat_results)
+    return [('layer_1',np.array([1.0,2.0])),('layer_2',np.array([1.0,2.0]))]
+
+
+def per_image_df(row):
+    return row
+
+if __name__ == '__main__':
+    per_image('opensurfaces/6582.jpg,train,224,224,112,112,opensurfaces/6582_color.png,,,opensurfaces/6582_material.png,,')

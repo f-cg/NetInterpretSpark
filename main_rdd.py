@@ -1,7 +1,6 @@
 from pyspark import SparkConf,SparkContext
 import torch
 import settings
-from fo import hook_feature
 import cv2
 from model_loader import loadmodel
 import numpy as np
@@ -19,14 +18,18 @@ sc = SparkContext(conf=conf)
 # out=model(input)
 # print(out)
 # print(out.size())
-index_file=settings.DATA_DIRECTORY+'small_index.csv'
+index_file=settings.DATA_DIRECTORY+'small_index_noheader.csv'
 if not os.path.exists(index_file):
     print(index_file+' index file not exists!')
     exit(0)
 rdd = sc.textFile(index_file)
-cl = rdd.map(per_image).collect()
+features = rdd.flatMap(per_image)
+
+cl = features.collect()
 print(len(cl))
-print(cl)
+print(cl[0])
+print(cl[1])
+print(cl[3])
 
 # sc.textFile("file.csv") .map(lambda line: line.split(",")).filter(lambda line: len(line)>1).map(lambda line: (line[0],line[1])).collect()
 # 对index中的每一行并行处理。

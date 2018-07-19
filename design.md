@@ -7,9 +7,16 @@ scene和texture是整张图片属于某几个标签，index表里只是数字。
 
 label(number,name,category)
 
-feature_names(feature_name) #layer_name
+feature_names(layer_name) #layer_name
 
-map(image,color_map_values)
+map(image, map_values_list_dict)  |  map(image, layer_name_unit_id, map_values)
+
+threshold(layer_name_unit_id, thresh)
+
+index+map+threshold+map => 
+iou(layer_name_unit_id, number, IoUkc)
+
+
 
 select 
 from feature_names,index
