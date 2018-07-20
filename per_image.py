@@ -8,6 +8,7 @@ from torchvision import transforms as trn
 from torch.nn import functional as F
 from settings import FEATURE_NAMES
 from pyspark.sql import Row
+from  itertools import chain
 # image,split,ih,iw,sh,sw,color,object,part,material,scene,texture
 
 
@@ -23,16 +24,11 @@ def returnTF():
 
 def per_image(line):
     print(line)
-    # print(line)
     record = line.split(',')
     assert len(record) == 12
     im_name = DATA_DIRECTORY+'images/'+record[0]
     if not os.path.exists(im_name):
         return (im_name, 'False')
-    # for r in record[6:]:
-    #     if r!='':
-    #         print(r)
-    # return
     img = Image.open(im_name)
     features_blobs = []
 
@@ -46,7 +42,8 @@ def per_image(line):
     flat_results = []
     for layer_i, layer_features in enumerate(features_blobs):
         for unit_id, map in enumerate(layer_features[0]):
-            flat_results.append(Row(layer_id=FEATURE_NAMES[layer_i]+'_'+str(unit_id), feature_map=map.tolist()))
+            flat_results.append(Row(index_line=line, layer_id=FEATURE_NAMES[layer_i]+'_'+str(unit_id), feature_map=list(chain(*(map.tolist())))))
+
     # print(flat_results)
     # h_x = F.softmax(logit, 1).data.squeeze()
     # print(h_x[46])

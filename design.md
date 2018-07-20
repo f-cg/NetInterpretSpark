@@ -18,3 +18,11 @@ iou(layer_name_unit_id, number, IoUkc)
 
 select 
 from feature_names,index
+
+
+## in practice
+
+features_df(index_line, layer_id, feature_map)
+thresholds(layer_id,thresh)
+iau(image, layer_id, c, i, u)
+ioukc(layer_id, c, IoUkc)
