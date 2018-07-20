@@ -16,7 +16,5 @@ threshold(layer_name_unit_id, thresh)
 index+map+threshold+map => 
 iou(layer_name_unit_id, number, IoUkc)
 
-
-
 select 
 from feature_names,index

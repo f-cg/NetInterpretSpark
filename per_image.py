@@ -7,6 +7,7 @@ from model_loader import loadmodel
 from torchvision import transforms as trn
 from torch.nn import functional as F
 from settings import FEATURE_NAMES
+from pyspark.sql import Row
 # image,split,ih,iw,sh,sw,color,object,part,material,scene,texture
 
 
@@ -34,28 +35,29 @@ def per_image(line):
     # return
     img = Image.open(im_name)
     features_blobs = []
+
     def hook_feature(module, input, output):
         features_blobs.append(output.data.cpu().numpy())
     model = loadmodel(hook_feature)
     tf = returnTF()
-    imgs=tf(img).unsqueeze(0)
+    imgs = tf(img).unsqueeze(0)
     logit = model(imgs)
     # print(features_blobs[0].shape)
     flat_results = []
     for layer_i, layer_features in enumerate(features_blobs):
         for unit_id, map in enumerate(layer_features[0]):
-            flat_results.append((FEATURE_NAMES[layer_i]+'_'+str(unit_id), map))
+            flat_results.append(Row(layer_id=FEATURE_NAMES[layer_i]+'_'+str(unit_id), feature_map=map.tolist()))
     # print(flat_results)
     # h_x = F.softmax(logit, 1).data.squeeze()
     # print(h_x[46])
     # # return (line,im)
-    # return flat_results
-    # print(flat_results)
-    return [('layer_1',np.array([1.0,2.0])),('layer_2',np.array([1.0,2.0]))]
+    return flat_results
+    # return [Row(layer_id='layer_1', feature_map=[[1.0, 2.0], [3.1, 4.1]]), Row(layer_id='layer_2', feature_map=[[1.0, 2.0], [3.1, 4.1]])]
 
 
 def per_image_df(row):
     return row
+
 
 if __name__ == '__main__':
     per_image('opensurfaces/6582.jpg,train,224,224,112,112,opensurfaces/6582_color.png,,,opensurfaces/6582_material.png,,')
