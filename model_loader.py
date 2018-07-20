@@ -3,8 +3,6 @@ import torch
 import torchvision
 
 def loadmodel(hook_fn):
-    print(settings.MODEL_FILE)
-    print(settings.FEATURE_NAMES)
     checkpoint = torch.load(settings.MODEL_FILE, map_location='cpu')
     # 这种情况说明只是保存的state_dict()，需要原来的网络架构信息
     if type(checkpoint).__name__ == 'OrderedDict' or type(checkpoint).__name__ == 'dict':
