@@ -1,12 +1,8 @@
 from pyspark import SparkConf, SparkContext, SQLContext
 import pyspark
 import settings
-from itertools import chain
 import os
 from per_image import per_image
-# from pyspark.sql import SparkSession
-# import pyspark.sql.functions as func
-# from pyspark.sql import DataFrameStatFunctions as statFunc  
 from compute_iou import compute_iau
 
 conf = SparkConf().setAppName('NetIntepreter').setMaster('local[3]')
@@ -24,18 +20,19 @@ features_rowrdd.cache()
 features_df = sqlContext.createDataFrame(features_rowrdd)
 features_df.cache()
 #  展平特征图中的每个值，便于取top0.5% features_flat(layer_id,v)
-features_flat = features_df.rdd.flatMap(lambda row: [(row.layer_id, v) for v in row.feature_map]).toDF(['layer_id', 'v'])
+features_flat = features_df.rdd.flatMap(
+    lambda row: [(row.layer_id, v) for v in row.feature_map]).toDF(['layer_id', 'v'])
 features_flat.registerTempTable('features_flat')
 #  得到每个神经元的激活阈值  thresholds(layer_id,thresh)
-thresholds = sqlContext.sql("select layer_id, percentile_approx(v, 0.995) as thresh from features_flat group by layer_id")
-features_thresh = features_df.join(thresholds,(features_df.layer_id==thresholds.layer_id), 'inner').drop(thresholds.layer_id)
-# features_thresh.show()
-# print(features_thresh.schema)
+thresholds = sqlContext.sql(
+    'select layer_id, percentile_approx(v, 0.995) as thresh from features_flat group by layer_id')
+features_thresh = features_df.join(
+    thresholds, (features_df.layer_id == thresholds.layer_id), 'inner').drop(thresholds.layer_id)
 #  得到每个 神经元概念对 对应的交和并，为了效率，去掉了交为0的那些行
 iau = features_thresh.rdd.flatMap(compute_iau).toDF()
-# print(type(iau))
-iau.show(1000)
-# print(iau.collect())
+# iau.show()
+iau.registerTempTable('iau')
+iou = sqlContext.sql(
+    'select layer_id, concept, sum(i)/sum(u) as iou from iau group by layer_id, concept')
+iou.show()
 # thresholds = df.groupBy('layer_id').agg(statFunc(df).approxQuantile('v', [0.5], 0.1))
-
-# sc.textFile("file.csv") .map(lambda line: line.split(",")).filter(lambda line: len(line)>1).map(lambda line: (line[0],line[1])).collect()
