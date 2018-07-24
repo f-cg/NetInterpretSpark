@@ -33,7 +33,7 @@ def compute_iau(row):
                 assert(intersect<=union)
                 results.append(Row(**{'layer_id':row.layer_id, 'concept':int(e),'i':intersect,'u':union}))
             else:
-                im_name = DATA_DIRECTORY+'images/'+e
+                im_name = os.path.join(DATA_DIRECTORY,'images',e)
                 concepts_img = np.array(Image.open(im_name))
                 assert(concepts_img.shape==(112,112,3))
                 concepts_img = np.array([[y[0]+y[1]*256 for y in x] for x in concepts_img])

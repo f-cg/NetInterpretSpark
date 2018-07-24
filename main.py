@@ -4,19 +4,23 @@ import settings
 import os
 from per_image import per_image
 from compute_iou import compute_iau
+from pyspark.sql.window import Window
+from pyspark.sql.functions import rank, col
+import pickle
+# import pandas as pd
+os.makedirs(settings.OUTPUT_FOLDER,exist_ok=True)
 
 conf = SparkConf().setAppName('NetIntepreter').setMaster('local[3]')
 sc = SparkContext(conf=conf)
 sqlContext = SQLContext(sc)
 
-index_file = settings.DATA_DIRECTORY+'small_index_noheader.csv'
+index_file = os.path.join(settings.DATA_DIRECTORY,'small_index_noheader.csv')
 if not os.path.exists(index_file):
     print(index_file+' index file not exists!')
     exit(0)
 index_rdd = sc.textFile(index_file)
 #  得到每张图片在每个神经元上的特征图(list)。features_df(index_line, layer_id, feature_map)
 features_rowrdd = index_rdd.flatMap(per_image)
-features_rowrdd.cache()
 features_df = sqlContext.createDataFrame(features_rowrdd)
 features_df.cache()
 #  展平特征图中的每个值，便于取top0.5% features_flat(layer_id,v)
@@ -34,5 +38,15 @@ iau = features_thresh.rdd.flatMap(compute_iau).toDF()
 iau.registerTempTable('iau')
 iou = sqlContext.sql(
     'select layer_id, concept, sum(i)/sum(u) as iou from iau group by layer_id, concept')
-iou.show()
+# 保存到hdfs，以后可以加载df = park.read.load('dfs:///target/path/‘)
+# iou.write.save('dfs:///target/path/', format='parquet')
+# iou.show()
+#  取前几名角色
+window = Window.partitionBy(iou['layer_id']).orderBy(iou['iou'].desc())
+top_iou = iou.select('*', rank().over(window).alias('rank')).filter(col('rank') <= 2)
+# top_iou.show() 
 # thresholds = df.groupBy('layer_id').agg(statFunc(df).approxQuantile('v', [0.5], 0.1))
+# toPandas会先collect到driver_node,保存为pandas的dataframe,便于本地分析
+top_iou_pd = top_iou.toPandas()
+with open(os.path.join(settings.OUTPUT_FOLDER,'iou_pd_top2'), 'wb') as f:
+    pickle.dump(top_iou_pd,f)
