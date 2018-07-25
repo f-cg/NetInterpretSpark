@@ -9,7 +9,12 @@ from pyspark.sql.window import Window
 from pyspark.sql.functions import rank, col
 import pickle
 # import pandas as pd
-os.makedirs(settings.OUTPUT_FOLDER,exist_ok=True)
+# os.makedirs(settings.OUTPUT_FOLDER,exist_ok=True)
+try:
+    os.makedirs(settings.OUTPUT_FOLDER)
+except OSError as e:
+    if e.errno != errno.EEXIST:
+        raise
 
 conf = SparkConf().setAppName('NetIntepreter').setMaster('local[3]')
 sc = SparkContext(conf=conf)
