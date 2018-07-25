@@ -16,11 +16,7 @@ conf = SparkConf().setAppName('NetIntepreter').setMaster('local[3]')
 sc = SparkContext(conf=conf)
 sqlContext = SQLContext(sc)
 
-index_file = os.path.join(settings.DATA_DIRECTORY,'small_index_noheader.csv')
-if not os.path.exists(index_file):
-    print(index_file+' index file not exists!')
-    exit(0)
-index_rdd = sc.textFile(index_file)
+index_rdd = sc.textFile(settings.INDEX_FILE)
 #  得到每张图片在每个神经元上的特征图(list)。features_df(index_line, layer_id, feature_map)
 features_rowrdd = index_rdd.flatMap(per_image)
 features_df = sqlContext.createDataFrame(features_rowrdd)

@@ -16,10 +16,12 @@ OUTPUT_FOLDER = PREFIX+'result/' # result will be stored in this folder
 MODEL_FILE = PREFIX+'data/resnet18_places365.pth.tar'
 FEATURE_NAMES = ['layer4']
 DATA_DIRECTORY = PREFIX+'data/broden1_224/'
-INDEX_FILE = 'index.csv'
+INDEX_FILE = 'hdfs:///fengcg/data/small_index.csv'
 NUM_CLASSES = 365
 MODEL_PARALLEL = True
 # WORKERS = 12
 # BATCH_SIZE = 128
 # TALLY_BATCH_SIZE = 16
 # TALLY_AHEAD = 4
+
+# hdfs dfs -put small_index.csv small_index_noheader.csv index.csv /fengcg/data
