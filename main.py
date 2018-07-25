@@ -1,3 +1,4 @@
+# encoding=utf-8
 from pyspark import SparkConf, SparkContext, SQLContext
 import pyspark
 import settings
