@@ -1,3 +1,4 @@
+# encoding=utf-8
 ######### global settings  #########
 GPU = False                                  # running on GPU is highly suggested
 # TEST_MODE = False                           # turning on the testmode means the code will run on a small dataset.
