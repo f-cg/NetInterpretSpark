@@ -1,4 +1,3 @@
-# encoding=utf-8
 ######### global settings  #########
 GPU = False                                  # running on GPU is highly suggested
 # TEST_MODE = False                           # turning on the testmode means the code will run on a small dataset.
@@ -16,7 +15,7 @@ OUTPUT_FOLDER = PREFIX+'result/' # result will be stored in this folder
 MODEL_FILE = PREFIX+'data/resnet18_places365.pth.tar'
 FEATURE_NAMES = ['layer4']
 DATA_DIRECTORY = PREFIX+'data/broden1_224/'
-INDEX_FILE = 'hdfs:///fengcg/data/small_index.csv'
+INDEX_FILE = 'hdfs://daim209:9000/fengcg/data/small_index.csv'
 NUM_CLASSES = 365
 MODEL_PARALLEL = True
 # WORKERS = 12

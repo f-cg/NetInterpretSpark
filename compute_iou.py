@@ -1,4 +1,3 @@
-# encoding=utf-8
 import numpy as np
 import scipy
 import scipy.misc
@@ -7,7 +6,6 @@ from pyspark.sql import Row
 from settings import DATA_DIRECTORY
 from PIL import Image
 import os
-
 #feature_map|          index_line|  layer_id|            thresh
 def compute_iau(row):
     record = row.index_line.split(',')
