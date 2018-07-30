@@ -11,7 +11,7 @@ import pickle
 if not os.path.exists(settings.OUTPUT_FOLDER):
     os.makedirs(settings.OUTPUT_FOLDER)
 
-conf = SparkConf().setAppName('NetIntepreter').setMaster('spark://daim209:7077')
+conf = SparkConf().setAppName('NetIntepreter').setMaster('local[3]')
 sc = SparkContext(conf=conf)
 sqlContext = SQLContext(sc)
 
@@ -20,6 +20,10 @@ index_rdd = sc.textFile(settings.INDEX_FILE)
 features_rowrdd = index_rdd.flatMap(per_image)
 features_df = sqlContext.createDataFrame(features_rowrdd)
 features_df.cache()
+print('partition nums:',features_df.rdd.getNumPartitions())
+features_df=features_df.repartition(10)
+print('new partition nums:',features_df.rdd.getNumPartitions())
+
 # features_flat(layer_id,v)
 features_flat = features_df.rdd.flatMap(
     lambda row: [(row.layer_id, v) for v in row.feature_map]).toDF(['layer_id', 'v'])
@@ -51,5 +55,5 @@ with open(os.path.join(settings.OUTPUT_FOLDER,'iou_pd_top2'), 'wb') as f:
 '''
 /home/hadoop/spark/bin/spark-submit --master spark://daim209:7077 --py-files /home/hadoop/fengcg/NetInterpretSpark/*
 
-/home/hadoop/spark/bin/spark-submit --master spark://daim209:7077 --py-files /home/hadoop/fengcg/NetInterpretSpark/pyfiles.zip main.py
+/home/hadoop/spark/bin/spark-submit --master spark://daim209:7077 --conf "spark.driver.memory=4g" --py-files /home/hadoop/fengcg/NetInterpretSpark/pyfiles.zip /home/hadoop/fengcg/NetInterpretSpark/main.py
 '''

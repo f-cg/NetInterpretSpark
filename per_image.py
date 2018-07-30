@@ -28,6 +28,7 @@ def per_image(line):
     assert len(record) == 12
     im_name = os.path.join(DATA_DIRECTORY,'images',record[0])
     if not os.path.exists(im_name):
+        print(im_name+' file not exists')
         return (im_name, 'False')
     img = Image.open(im_name)
     features_blobs = []
