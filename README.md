@@ -8,8 +8,9 @@ model_loader.py是直接搬过来的，其它全部重写
 
 修改settings.py里MODEL_FILE,FEATURE_NAMES等参数为自己所需，其它参数写死，以后根据需要再提供。
 
-python3 main.py
+zip pyfiles.zip *.py  
+/home/hadoop/spark/bin/spark-submit --master spark://daim209:7077 --py-files /home/hadoop/fengcg/NetInterpretSpark/pyfiles.zip main.py
 
-## todo
+集群上的python环境年久失修，经过努力，只在daim209 daim210 daim211 daim212 daim213上安装好了pytorch等模块，daim215和daim131安装和使用torch会出现各种错误，daim135失联。
 
-根据需要完善和明确功能选项之后，将其封装为一个模块
+四台机器作worker node，花费半小时产生针对layer4的512个卷积核的角色。
