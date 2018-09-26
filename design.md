@@ -5,26 +5,15 @@ part material同理
 scene和texture是整张图片属于某几个标签，index表里只是数字。
 多个标签的情况下用;分隔
 
-label(number,name,category)
+像素标注数据在每个节点上都存在，只有index文件在dfs上，为了保证访问速度和便于python读取。
 
-feature_names(layer_name) #layer_name
+## 表及行数变化
+image,split,ih,iw,sh,sw,color,object,part,material,scene,texture
+index.csv 9
+---per_image_blob---
+features_df(index_line, blob) 9
+    features_flat(layer_id,v) 225792
+thresholds(layer_id,thresh) 512 =>thresholds_dict broadcast
 
-map(image, map_values_list_dict)  |  map(image, layer_name_unit_id, map_values)
-
-threshold(layer_name_unit_id, thresh)
-
-index+map+threshold+map => 
-iou(layer_name_unit_id, number, IoUkc)
-
-select 
-from feature_names,index
-
-
-## in practice
-
-features_df(index_line, layer_id, feature_map)
-thresholds(layer_id,thresh)
-iau(image, layer_id, c, i, u)
-ioukc(layer_id, c, IoUkc)
-
-#  得到每个 神经元概念对 对应的交和并，为了效率，去掉了交为0的那些行
+iau(layer_id, concept, i, u) 58368
+iou(layer_id, concept, iou)
